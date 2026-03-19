@@ -1,0 +1,36 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <iostream>
+using namespace std;
+int main()
+{
+    
+    double n1,n2;
+    
+    cout<<"Calculadora de Aprovação";
+    cout<<"\n ------------------------------------------";
+    
+    cout<<"\n a = " ;
+    cin>> n1;
+    
+    cout<<"\n b = ";
+    cin>> n2;
+    
+    
+    if (n1 == n2){
+        cout<<"\n Os numeros são iguais";
+        
+    }else{
+    
+    cout<<"\n Os Numeros são diferentes";
+    }
+    
+    
+    return 0;
+}
