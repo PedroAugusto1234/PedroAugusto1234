@@ -1,9 +1,6 @@
 ## Olá
 
-Gosto de Relatividade, Fisica em geral
-
-e faço programações
-
+Matematica!!!!!
 
 
 meu email 📧
