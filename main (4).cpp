@@ -1,0 +1,34 @@
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <iostream>
+using namespace std;
+int main()
+{
+    
+    double x,n2,n3,n4,n5,n6,n7,n8,n9,n10,n11,n12 ;
+    
+    cout<<"Proximação de 0 de funções Newton-Lagrange";
+    cout<<"\n ------------------------------------------";
+    
+    cout<<"\n chute inicial";
+    cin>> x;
+    
+    
+    n2 = x - (5*x*x*x*x*x + 4*x*x + 2 )/(25*x*x*x*x + 8*x );
+    
+    cout<<"\n x1 = "<< n2;
+    
+    n3 = n2 - (5*n2*n2*n2*n2*n2 + 4*n2*n2 + 2 )/(25*n2*n2*n2*n2 + 8*n2 );
+    
+    cout<<"\n x2 = "<< n3;
+
+    
+    
+    return 0;
+}
