@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciclóide — Rolamento sem deslizamento</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: sans-serif;
+    background: #111;
+    color: #ccc;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+  h2 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #ddd;
+  }
+  p.sub {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 16px;
+  }
+  canvas {
+    display: block;
+    width: 100%;
+    max-width: 680px;
+    border-radius: 8px;
+  }
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  button {
+    font-size: 13px;
+    padding: 5px 16px;
+    border-radius: 6px;
+    border: 0.5px solid #444;
+    background: #1e1e1e;
+    color: #ccc;
+    cursor: pointer;
+  }
+  button:hover { background: #2a2a2a; }
+</style>
+</head>
+<body>
+<h2>Braquistócrona — Ciclóide</h2>
+<p class="sub">Rolamento sem deslizamento: x(θ) = r(θ − sinθ), y(θ) = r(1 − cosθ)</p>
+
+<canvas id="c" width="680" height="220"></canvas>
+
+<div class="controls">
+  <button id="btn-toggle" onclick="toggleAnim()">pausar</button>
+  <button onclick="resetAnim()">reiniciar</button>
+</div>
+
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const W = 680, H = 220;
+const r = 44;
+const groundY = H - 40;
+const startX = r + 20;
+const duration = 7000;
+const maxTheta = 4 * Math.PI;
+
+let running = true;
+let startTime = null;
+let raf;
+
+function draw(theta) {
+  ctx.clearRect(0, 0, W, H);
+
+  const colText   = '#9c9a92';
+  const colGround = 'rgba(255,255,255,0.18)';
+  const colCircle = 'rgba(180,178,169,0.5)';
+  const colSpoke  = 'rgba(180,178,169,0.55)';
+  const colTrace  = '#378ADD';
+  const colCenter = 'rgba(200,200,200,0.6)';
+
+  // ground line
+  ctx.beginPath();
+  ctx.moveTo(20, groundY);
+  ctx.lineTo(W - 24, groundY);
+  ctx.strokeStyle = colGround;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  // arrow
+  ctx.beginPath();
+  ctx.moveTo(W-30, groundY-5);
+  ctx.lineTo(W-18, groundY);
+  ctx.lineTo(W-30, groundY+5);
+  ctx.strokeStyle = colGround;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+
+  ctx.font = '12px sans-serif';
+  ctx.fillStyle = colText;
+  ctx.textAlign = 'right';
+  ctx.fillText('rolamento', W - 16, groundY + 18);
+
+  // circle center
+  const cx = startX + r * theta;
+  const cy = groundY - r;
+
+  // cycloid trace
+  ctx.beginPath();
+  for (let t = 0; t <= theta; t += 0.015) {
+    const px = startX + r * (t - Math.sin(t));
+    const py = groundY - r * (1 - Math.cos(t));
+    t === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
+  }
+  ctx.strokeStyle = colTrace;
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // rolling circle
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(theta);
+
+  ctx.beginPath();
+  ctx.arc(0, 0, r, 0, 2 * Math.PI);
+  ctx.strokeStyle = colCircle;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  const nSpokes = 6;
+  for (let i = 0; i < nSpokes; i++) {
+    const angle = (2 * Math.PI / nSpokes) * i;
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(r * Math.cos(angle), r * Math.sin(angle));
+    ctx.strokeStyle = colSpoke;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(r * Math.cos(angle), r * Math.sin(angle), 3, 0, 2 * Math.PI);
+    ctx.fillStyle = colSpoke;
+    ctx.fill();
+  }
+
+  // tracing dot
+  ctx.beginPath();
+  ctx.arc(0, r, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = '#378ADD';
+  ctx.fill();
+
+  // center dot
+  ctx.beginPath();
+  ctx.arc(0, 0, 3, 0, 2 * Math.PI);
+  ctx.fillStyle = colCenter;
+  ctx.fill();
+
+  ctx.restore();
+
+  // equation label
+  ctx.font = '12px sans-serif';
+  ctx.fillStyle = colText;
+  ctx.textAlign = 'center';
+  ctx.fillText('x(θ) = r(θ − sinθ),  y(θ) = r(1 − cosθ)', W / 2, H - 8);
+}
+
+function loop(ts) {
+  if (!startTime) startTime = ts;
+  const t = Math.min((ts - startTime) / duration, 1);
+  draw(t * maxTheta);
+  if (t < 1 && running) raf = requestAnimationFrame(loop);
+}
+
+function toggleAnim() {
+  running = !running;
+  document.getElementById('btn-toggle').textContent = running ? 'pausar' : 'continuar';
+  if (running) raf = requestAnimationFrame(loop);
+}
+
+function resetAnim() {
+  running = true;
+  startTime = null;
+  document.getElementById('btn-toggle').textContent = 'pausar';
+  cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(loop);
+}
+
+raf = requestAnimationFrame(loop);
+</script>
+</body>
+</html>
